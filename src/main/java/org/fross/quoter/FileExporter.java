@@ -49,7 +49,7 @@ public class FileExporter {
 		// Create the export file
 		try {
 			this.exportFile = new File(fileName);
-			if (this.exportFile.createNewFile() == false) {
+			if (!this.exportFile.createNewFile()) {
 				Output.fatalError("Could not create export file: '" + fileName + "'", 4);
 			}
 		} catch (IOException ex) {
@@ -87,10 +87,10 @@ public class FileExporter {
 		try {
 			// Export the header row
 			List<String> fields = symbolObj.getAllFieldNames();
-			if (this.exportSymbolHeaderWritten == false) {
+			if (!this.exportSymbolHeaderWritten) {
 				for (String i : fields) {
 					if (!i.matches("[Ss]tatus"))
-						this.exportFileFW.append(i + ",");
+						this.exportFileFW.append(i).append(",");
 				}
 				this.exportFileFW.append("\n");
 				this.exportSymbolHeaderWritten = true;
@@ -101,7 +101,7 @@ public class FileExporter {
 				// If the data has a ',' in it remove it
 				String item = symbolObj.get(i).replaceAll(",", "");
 				if (!symbolObj.get(i).matches("[Oo][Kk]"))
-					this.exportFileFW.append(item + ",");
+					this.exportFileFW.append(item).append(",");
 			}
 			this.exportFileFW.append("\n");
 
@@ -120,10 +120,10 @@ public class FileExporter {
 			this.exportFileFW.append("\n");
 			// Dump the header information to the export file
 			List<String> fields = indexObj.getAllFieldNames();
-			if (this.exportIndexHeaderWritten == false) {
+			if (!this.exportIndexHeaderWritten) {
 				for (String i : fields) {
 					if (!i.matches("[Ss]tatus"))
-						this.exportFileFW.append(i + ",");
+						this.exportFileFW.append(i).append(",");
 				}
 				this.exportFileFW.append("\n");
 				this.exportIndexHeaderWritten = true;
@@ -132,7 +132,7 @@ public class FileExporter {
 			// Dump the index data
 			for (String key : indexObj.getAllFieldNames()) {
 				if (!indexObj.get(key).matches("[Oo][Kk]"))
-					this.exportFileFW.append("\"" + indexObj.get(key) + "\"" + ",");
+					this.exportFileFW.append("\"").append(indexObj.get(key)).append("\"").append(",");
 			}
 
 		} catch (IOException ex) {

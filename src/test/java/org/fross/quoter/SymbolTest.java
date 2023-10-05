@@ -47,14 +47,13 @@ class SymbolTest {
 			Symbol symb = new Symbol(testSymbols[i]);
 
 			// Loop through each field and ensure it exists in the currently being tested symbol
-			for (int j = 0; j < testFields.length; j++) {
-				try {
-					assertNotNull(symb.get(testFields[j]));
-
-				} catch (Exception ex) {
-					fail("'" + testFields[i] + "' does not exist");
-				}
-			}
+            for (String testField : testFields) {
+                try {
+                    assertNotNull(symb.get(testField));
+                } catch (Exception ex) {
+                    fail("'" + testFields[i] + "' does not exist");
+                }
+            }
 
 			// Since the names shouldn't change, lets test a few of the fullname fields
 			assertEquals(symb.get("fullname"), symbolFullName[i]);

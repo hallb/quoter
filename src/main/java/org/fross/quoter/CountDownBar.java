@@ -34,8 +34,8 @@ import org.fross.library.Output;
 import org.fusesource.jansi.Ansi;
 
 public class CountDownBar extends Thread {
-	private int countDownOrig = 30;
-	private int countDown = 30;
+	private final int countDownOrig;
+	private int countDown;
 
 	// Constructor: Sets the time for the count down in seconds
 	public CountDownBar(int sec) {
@@ -96,7 +96,7 @@ public class CountDownBar extends Thread {
 		int testDuration;
 
 		try {
-			testDuration = Integer.valueOf(args[0]);
+			testDuration = Integer.parseInt(args[0]);
 		} catch (ArrayIndexOutOfBoundsException ex) {
 			testDuration = 20;
 		}

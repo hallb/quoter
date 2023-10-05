@@ -100,17 +100,17 @@ public class Main {
 		// -----------------------------------------------------------------
 		// CLI: Debug Switch
 		// -----------------------------------------------------------------
-		if (cli.clDebug == true) {
+		if (cli.clDebug) {
 			Debug.enable();
 		}
 
 		// -----------------------------------------------------------------
 		// CLI: list Favorites
 		// -----------------------------------------------------------------
-		if (cli.clListFavorites == true) {
+		if (cli.clListFavorites) {
 			Output.printColorln(Ansi.Color.YELLOW, "Current Favorites:");
 			for (String i : Prefs.queryString(PREFS_SAVED_SYMBOLS).split(" ")) {
-				if (i != "Error") {
+				if (!"Error".equals(i)) {
 					Output.printColorln(Ansi.Color.CYAN, "  - " + i);
 				} else {
 					Output.printColorln(Ansi.Color.CYAN, "  - There are no saved favorites");
@@ -122,7 +122,7 @@ public class Main {
 		// -----------------------------------------------------------------
 		// CLI: Export Data
 		// -----------------------------------------------------------------
-		if (cli.clExport.isEmpty() == false) {
+		if (!cli.clExport.isEmpty()) {
 			exporter = new FileExporter(cli.clExport);
 		}
 
@@ -142,7 +142,7 @@ public class Main {
 		// -----------------------------------------------------------------
 		// CLI: Display Version & Latest GitHub Release
 		// -----------------------------------------------------------------
-		if (cli.clVersion == true) {
+		if (cli.clVersion) {
 			Output.printColorln(Ansi.Color.YELLOW, "\nCurrent Quoter version:   v" + Main.VERSION);
 			Output.printColorln(Ansi.Color.WHITE, "Latest Release on GitHub: " + GitHub.updateCheck("quoter"));
 			Output.printColorln(Ansi.Color.CYAN, "HomePage: https://github.com/frossm/quoter");
@@ -152,7 +152,7 @@ public class Main {
 		// -----------------------------------------------------------------
 		// CLI: Remove saved securities
 		// -----------------------------------------------------------------
-		if (cli.clRemoveFavorites == true) {
+		if (cli.clRemoveFavorites) {
 			Prefs.remove(PREFS_SAVED_SYMBOLS);
 			Output.printColor(Ansi.Color.YELLOW, "Saved securities have been removed\n");
 			System.exit(0);
@@ -161,14 +161,14 @@ public class Main {
 		// -----------------------------------------------------------------
 		// CLI: Disable color output
 		// -----------------------------------------------------------------
-		if (cli.clNoColor == true) {
+		if (cli.clNoColor) {
 			Output.enableColor(false);
 		}
 
 		// -----------------------------------------------------------------
 		// CLI: Show Help and Exit
 		// -----------------------------------------------------------------
-		if (cli.clHelp == true) {
+		if (cli.clHelp) {
 			Help.Display();
 			System.exit(0);
 		}
@@ -181,25 +181,25 @@ public class Main {
 		// ---- END Command Line Parsing -------------------------------------------------------------
 
 		// Save the symbols on the command line to preferences as a space delimited list
-		if (cli.clSave == true && cli.symbolList.isEmpty() == false) {
-			String flatSymbolList = "";
+		if (cli.clSave && !cli.symbolList.isEmpty()) {
+			StringBuilder flatSymbolList = new StringBuilder();
 
 			for (String i : cli.symbolList) {
-				flatSymbolList += i + " ";
+				flatSymbolList.append(i).append(" ");
 			}
-			Output.printColorln(Ansi.Color.YELLOW, " - Saving the following symbols: '" + flatSymbolList.trim() + "'");
-			Prefs.set(PREFS_SAVED_SYMBOLS, flatSymbolList.trim());
+			Output.printColorln(Ansi.Color.YELLOW, " - Saving the following symbols: '" + flatSymbolList.toString().trim() + "'");
+			Prefs.set(PREFS_SAVED_SYMBOLS, flatSymbolList.toString().trim());
 
 			// Empty the symbol list after saving as they will be added back below. Don't want it twice
 			cli.symbolList.clear();
 		}
 
 		// Add any saved symbols to the list of symbols to process
-		if (cli.clIgnoreFavorites == false) {
+		if (!cli.clIgnoreFavorites) {
 			Output.debugPrintln("Adding saved symbols: '" + Prefs.queryString(PREFS_SAVED_SYMBOLS) + "'");
 			String[] savedSymbols = Prefs.queryString(PREFS_SAVED_SYMBOLS).split(" ");
 			for (String i : savedSymbols) {
-				if (i != "Error") {
+				if (!"Error".equals(i)) {
 					cli.symbolList.add(i);
 				}
 			}

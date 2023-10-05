@@ -40,7 +40,7 @@ public class Prefs {
 	private static final String PREFS_PATH = "/org/fross/quote";
 
 	// Class Variables
-	private static Preferences prefs = Preferences.userRoot().node(PREFS_PATH);
+	private static final Preferences prefs = Preferences.userRoot().node(PREFS_PATH);
 
 	/**
 	 * QueryBoolean(): Returns a boolean preference item

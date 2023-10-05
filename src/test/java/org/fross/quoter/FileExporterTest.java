@@ -62,9 +62,9 @@ class FileExporterTest {
 
 		// Create several securities and export it
 		String[] testSymbols = { "ACN", "AMZN", "F" };
-		for (int i = 0; i < testSymbols.length; i++) {
-			fe.exportSecurities(new Symbol(testSymbols[i]));
-		}
+        for (String testSymbol : testSymbols) {
+            fe.exportSecurities(new Symbol(testSymbol));
+        }
 		fe.close();
 
 		// Lets read the file and ensure that the symbol names exist
@@ -78,11 +78,10 @@ class FileExporterTest {
 			assertEquals(testSymbols.length + 1, fileContents.size());
 
 			// Read each line and verify it against the test symbol array values
-			String lineRead = "";
 			if (file.canRead() && file.isFile()) {
 				for (int i = 1; i < fileContents.size(); i++) {
 					if (!fileContents.get(i).isEmpty()) {
-						lineRead = fileContents.get(i).toUpperCase();
+						String lineRead = fileContents.get(i).toUpperCase();
 						assertTrue(lineRead.contains(testSymbols[i - 1].toUpperCase()));
 					}
 				}
@@ -117,9 +116,9 @@ class FileExporterTest {
 
 		// Create several securities and export it
 		String[] testIndexes = { "DOW", "NASDAQ", "S&P" };
-		for (int i = 0; i < testIndexes.length; i++) {
-			fe.exportIndexes(new Index(testIndexes[i]));
-		}
+        for (String testIndex : testIndexes) {
+            fe.exportIndexes(new Index(testIndex));
+        }
 		fe.close();
 
 		// Lets read the file and ensure that the symbol names exist
@@ -133,10 +132,9 @@ class FileExporterTest {
 			assertEquals(testIndexes.length + 2, fileContents.size());
 
 			// Read each line and verify it against the test symbol array values
-			String lineRead = "";
 			if (file.canRead() && file.isFile()) {
 				for (int i = 2; i < fileContents.size(); i++) {
-					lineRead = fileContents.get(i).toUpperCase();
+					String lineRead = fileContents.get(i).toUpperCase();
 					assertTrue(lineRead.contains(testIndexes[i - 2].toUpperCase()));
 				}
 			} else {

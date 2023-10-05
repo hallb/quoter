@@ -44,14 +44,14 @@ class IndexTest {
 			Index idx = new Index(testIndexes[i]);
 
 			// Loop through each field and ensure it exists in the currently being tested index
-			for (int j = 0; j < testFields.length; j++) {
-				try {
-					assertNotNull(idx.get(testFields[j]));
+            for (String testField : testFields) {
+                try {
+                    assertNotNull(idx.get(testField));
 
-				} catch (Exception ex) {
-					fail("'" + testFields[i] + "' does not exist");
-				}
-			}
+                } catch (Exception ex) {
+                    fail("'" + testFields[i] + "' does not exist");
+                }
+            }
 		}
 
 	}

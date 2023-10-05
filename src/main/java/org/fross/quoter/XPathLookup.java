@@ -27,12 +27,13 @@
 package org.fross.quoter;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class XPathLookup {
-	HashMap<String, String> symbolOpen = new HashMap<>();
-	HashMap<String, String> symbolClosed = new HashMap<>();
-	HashMap<String, String> indexOpen = new HashMap<>();
-	HashMap<String, String> indexClosed = new HashMap<>();
+	Map<String, String> symbolOpen = new HashMap<>();
+	Map<String, String> symbolClosed = new HashMap<>();
+	Map<String, String> indexOpen = new HashMap<>();
+	Map<String, String> indexClosed = new HashMap<>();
 
 	/**
 	 * Constructor: Populates the hash maps with the xPath strings

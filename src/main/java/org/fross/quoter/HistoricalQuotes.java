@@ -38,7 +38,7 @@ import org.fusesource.jansi.Ansi;
 public class HistoricalQuotes {
 	// Key is a date string
 	// Value is an array: [0]=DayHigh [1]=DayLow [2]=DayClose
-	Map<String, Float[]> resultMap = new TreeMap<String, Float[]>();
+	Map<String, Float[]> resultMap = new TreeMap<>();
 
 	// Number of days to go back from today in the trend
 	final int NUM_DAYS_IN_TREND = Prefs.queryInt("trendduration");
@@ -59,8 +59,8 @@ public class HistoricalQuotes {
 	 * 
 	 * @return
 	 */
-	public Map<String, Float[]> getHistoricalQuotes(String symb) {
-		Map<String, Float[]> map = new TreeMap<String, Float[]>();
+	public Map<String, Float[]> getHistoricalQuotes(String symbol) {
+		Map<String, Float[]> map = new TreeMap<>();
 		String quoteURL = "https://www.marketwatch.com/investing/stock/SYMBOL/downloaddatapartial?startdate=STARTDATE%2000:00:00&enddate=ENDDATE%2023:59:59&daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&newdates=false";
 
 		// Set the end date to today's date
@@ -74,7 +74,7 @@ public class HistoricalQuotes {
 		Output.debugPrintln("Trending Start Date set to: " + startDate);
 
 		// Add the symbol, start, and end dates to the URL
-		quoteURL = quoteURL.replaceAll("SYMBOL", symb);
+		quoteURL = quoteURL.replaceAll("SYMBOL", symbol);
 		quoteURL = quoteURL.replaceAll("STARTDATE", startDate);
 		quoteURL = quoteURL.replaceAll("ENDDATE", endDate);
 		Output.debugPrintln("Rewritten trending URL:\n" + quoteURL);
@@ -85,7 +85,7 @@ public class HistoricalQuotes {
 			historicalDataBlob = URLOperations.ReadURL(quoteURL);
 
 		} catch (Exception ex) {
-			Output.printColorln(Ansi.Color.RED, "Could not read historical data for '" + symb + "'");
+			Output.printColorln(Ansi.Color.RED, "Could not read historical data for '" + symbol + "'");
 		}
 
 		// Split each row (day) into an array
@@ -101,7 +101,7 @@ public class HistoricalQuotes {
 			String dateKey = historicalData[rowRead].split(",")[0].replaceAll("\"", "");
 
 			// Split the fields of the line read by commas into an array
-			String lineRead[] = historicalData[rowRead].split("\",\"");
+			String[] lineRead = historicalData[rowRead].split("\",\"");
 
 			Float[] temp = new Float[3];
 			temp[0] = Float.valueOf(lineRead[2].replace("[,\"]", ""));		// High
@@ -219,7 +219,6 @@ public class HistoricalQuotes {
 	 */
 	public void displayTrend(String symb) {
 		int graphWidth;
-		Float slotsPerCostUnit;
 		int lengthOfCurrentPrice;
 
 		// Calculate the largest value and smallest value for the security in the historical data
@@ -235,13 +234,13 @@ public class HistoricalQuotes {
 		Symbol symbolData = new Symbol(symb);
 
 		// Determine the output width. GraphWidth is TotalWidth - DateWidth - dailyLow/Close/High
-		lengthOfCurrentPrice = symbolData.get("latestPrice").toString().length();
+		lengthOfCurrentPrice = symbolData.get("latestPrice").length();
 		graphWidth = Main.cli.clWidth - 10 - (lengthOfCurrentPrice * 3 + 10);
 
 		Output.debugPrintln("Trending Graph Width set to: " + graphWidth);
 
 		// Determine how many spaces per dollar
-		slotsPerCostUnit = graphWidth / (lv - sv);
+		float slotsPerCostUnit = graphWidth / (lv - sv);
 		Output.debugPrintln("Map Slots: " + graphWidth);
 		Output.debugPrintln("Slots per Cost Unit: " + slotsPerCostUnit);
 
@@ -255,7 +254,7 @@ public class HistoricalQuotes {
 
 		// Display trending title bar
 		String midNumber = String.format("%.2f", ((sv + lv) / 2));
-		int titleSpaces1 = (graphWidth / 2) - svStr.length() - ((int) midNumber.length() / 2);
+		int titleSpaces1 = (graphWidth / 2) - svStr.length() - (midNumber.length() / 2);
 		int titleSpaces2 = graphWidth - svStr.length() - titleSpaces1 - lvStr.length() - lvStr.length();
 
 		Output.printColorln(Ansi.Color.WHITE, " ".repeat(12) + svStr + " ".repeat(titleSpaces1) + midNumber + " ".repeat(titleSpaces2) + lvStr);

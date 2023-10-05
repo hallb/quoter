@@ -30,6 +30,7 @@ package org.fross.quoter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.fross.library.Debug;
 import org.fross.library.Output;
@@ -42,14 +43,14 @@ import org.jsoup.nodes.Element;
 import us.codecraft.xsoup.Xsoup;
 
 public class Index {
-	HashMap<String, String> indexData = new HashMap<>();
+	private final Map<String, String> indexData = new HashMap<>();
 	private boolean marketOpen;
-	XPathLookup xPathLookup = new XPathLookup();
+	private final XPathLookup xPathLookup = new XPathLookup();
 
 	/**
 	 * Symbol Constructor(): Initialize class with a symbol to process
 	 * 
-	 * @param symb
+	 * @param idx
 	 */
 	public Index(String idx) {
 		getIndex(idx);
@@ -113,13 +114,8 @@ public class Index {
 	 * @return
 	 */
 	protected List<String> getAllFieldNames() {
-		List<String> returnList = new ArrayList<String>();
 
-		for (String i : this.indexData.keySet()) {
-			returnList.add(i);
-		}
-
-		return returnList;
+        return new ArrayList<>(this.indexData.keySet());
 	}
 
 	/**
@@ -133,7 +129,7 @@ public class Index {
 	 */
 	private void getIndex(String idx) {
 		String URL = "https://www.marketwatch.com/investing/index/SYMBOLHERE";
-		Document htmlPage = null;
+		Document htmlPage;
 
 		// Ensure a valid value was passed
 		switch (idx.toUpperCase()) {
@@ -169,14 +165,10 @@ public class Index {
 			this.indexData.put("status", "ok");
 
 			// Determine if the market is open or closed
-			if (Symbol.queryPageItem(htmlPage, this.xPathLookup.lookupIndexOpen("marketStatus")).toLowerCase().contains("closed") == true) {
-				marketOpen = false;
-			} else {
-				marketOpen = true;
-			}
+            marketOpen = !Symbol.queryPageItem(htmlPage, this.xPathLookup.lookupIndexOpen("marketStatus")).toLowerCase().contains("closed");
 
 			// MarketWatch has different XPaths depending if the market is open or closed
-			if (marketOpen == false) {
+			if (!marketOpen) {
 				// Market is CLOSED
 				Output.debugPrintln("Market is currently CLOSED");
 
@@ -199,8 +191,9 @@ public class Index {
 				key = "52weekRange";
 				result = queryPageItem(htmlPage, this.xPathLookup.lookupIndexClosed(key));
 
-				String w52Low = result.split(" - ")[0];
-				String w52High = result.split(" - ")[1];
+				String[] split = result.split(" - ");
+				String w52Low = split[0];
+				String w52High = split[1];
 
 				indexData.put("week52Low", w52Low.replaceAll("[,%]", "").trim());
 				indexData.put("week52High", w52High.replaceAll("[,%]", "").trim());
@@ -267,7 +260,7 @@ public class Index {
 			}
 
 			// If we are in debug mode, display the values we are returning
-			if (Debug.query() == true) {
+			if (Debug.query()) {
 				Output.debugPrintln("Index Data Results:");
 				for (String i : indexData.keySet()) {
 					Output.debugPrintln("  - " + i + ": " + this.get(i));

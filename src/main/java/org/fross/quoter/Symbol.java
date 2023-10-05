@@ -29,6 +29,7 @@ package org.fross.quoter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.fross.library.Debug;
 import org.fross.library.Output;
@@ -41,8 +42,8 @@ import org.jsoup.nodes.Element;
 import us.codecraft.xsoup.Xsoup;
 
 public class Symbol {
-	HashMap<String, String> symbolData = new HashMap<>();
-	XPathLookup xPathLookup = new XPathLookup();
+	private final Map<String, String> symbolData = new HashMap<>();
+	private final XPathLookup xPathLookup = new XPathLookup();
 
 	/**
 	 * Symbol Constructor(): Initialize class with a symbol to process
@@ -102,19 +103,14 @@ public class Symbol {
 	 * @return
 	 */
 	protected List<String> getAllFieldNames() {
-		List<String> returnList = new ArrayList<String>();
 
-		for (String i : this.symbolData.keySet()) {
-			returnList.add(i);
-		}
-
-		return returnList;
+        return new ArrayList<>(this.symbolData.keySet());
 	}
 
 	private void getSymbolData(String symb) {
 		String URL = "https://www.marketwatch.com/investing/stock/SYMBOLHERE";
-		Document htmlPage = null;
-		boolean marketOpen = false;
+		Document htmlPage;
+		boolean marketOpen;
 
 		// Add the provided symbol to the URL template
 		URL = URL.replaceAll("SYMBOLHERE", symb);
@@ -134,14 +130,10 @@ public class Symbol {
 			this.symbolData.put("status", "ok");
 
 			// Determine if the market is open or closed
-			if (Symbol.queryPageItem(htmlPage, this.xPathLookup.lookupIndexOpen("marketStatus")).toLowerCase().contains("open") == true) {
-				marketOpen = true;
-			} else {
-				marketOpen = false;
-			}
+            marketOpen = Symbol.queryPageItem(htmlPage, this.xPathLookup.lookupIndexOpen("marketStatus")).toLowerCase().contains("open");
 
 			// MarketWatch has different XPaths depending if the market is open or closed
-			if (marketOpen == false) {
+			if (!marketOpen) {
 				// Market is CLOSED
 				Output.debugPrintln("Market is currently CLOSED");
 
@@ -164,8 +156,8 @@ public class Symbol {
 				key = "52weekRange";
 				result = queryPageItem(htmlPage, this.xPathLookup.lookupSymbolClosed(key));
 
-				String low52 = "";
-				String high52 = "";
+				String low52;
+				String high52;
 				try {
 					low52 = result.split(" - ")[0];
 					high52 = result.split(" - ")[1];
@@ -180,8 +172,8 @@ public class Symbol {
 				key = "dayRange";
 				result = queryPageItem(htmlPage, this.xPathLookup.lookupSymbolClosed(key));
 
-				String lowD = "";
-				String highD = "";
+				String lowD;
+				String highD;
 				try {
 					lowD = result.split(" - ")[0];
 					highD = result.split(" - ")[1];
@@ -233,8 +225,8 @@ public class Symbol {
 				key = "52weekRange";
 				result = queryPageItem(htmlPage, this.xPathLookup.lookupSymbolOpen(key));
 
-				String low52 = "";
-				String high52 = "";
+				String low52;
+				String high52;
 				try {
 					low52 = result.split(" - ")[0];
 					high52 = result.split(" - ")[1];
@@ -249,8 +241,8 @@ public class Symbol {
 				key = "dayRange";
 				result = queryPageItem(htmlPage, this.xPathLookup.lookupSymbolOpen(key));
 
-				String lowD = "";
-				String highD = "";
+				String lowD;
+				String highD;
 				try {
 					lowD = result.split(" - ")[0];
 					highD = result.split(" - ")[1];
@@ -281,7 +273,7 @@ public class Symbol {
 			}
 
 			// If we are in debug mode, display the values of the symbol
-			if (Debug.query() == true) {
+			if (Debug.query()) {
 				Output.debugPrintln("Symbol Data Results:");
 				for (String i : this.symbolData.keySet()) {
 					Output.debugPrintln("  - " + i + ": " + this.get(i));
